@@ -1,0 +1,180 @@
+{% extends 'free/paymentHistory.html'%}
+
+{% block payment %}
+{% if payment_order %}
+
+<h1> payment for {{payment_order.item.itemName}} by {{request.user}}</h1>
+
+{% endif %}
+
+
+<main>
+    <div class="py-5 text-center">
+      <h2>Checkout form</h2>
+      <p class="lead">Fill in your payment details and make payment.</p>
+    </div>
+
+    <div class="row g-5">
+      <div class="col-md-5 col-lg-4 order-md-last">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-primary">Your cart</span>
+          <span class="badge bg-primary rounded-pill">3</span>
+        </h4>
+        <ul class="list-group mb-3">
+         
+          <li class="list-group-item d-flex justify-content-between lh-sm">
+            <div>
+              <h6 class="my-0">{{payment_order.item.itemName}}</h6>
+              <small class="text-body-secondary">{{payment_order.quantity}} at ${{payment_order.item.unitprice}} each </small>
+            </div>
+            <span class="text-body-secondary">${{payment_order.amount}}</span>
+          </li>
+
+          {% if payment_order.deliver %}
+          <li class="list-group-item d-flex justify-content-between lh-sm">
+            <div>
+              <h6 class="my-0"> Delivery Request </h6>
+              <small class="text-body-secondary"> Deliver any where in the world </small>
+            </div>
+            <span class="text-body-secondary">$ 10</span>
+          </li>
+          {% endif %}
+
+         
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Total (USD)</span>
+            <strong>${{payment_order.total_amount}}</strong>
+          </li>
+        </ul>
+
+        <!-- <form class="card p-2">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Promo code">
+            <button type="submit" class="btn btn-secondary">Redeem</button>
+          </div>
+        </form> -->
+      </div>
+      <div class="col-md-7 col-lg-8">
+        <h4 class="mb-3">Billing address</h4>
+        <form action="/payment_view" method="post" class="needs-validation" >
+          {% csrf_token %}
+          <div class="row g-3">
+            <input hidden name="order_id" type="text" value="{{payment_order.id}}">
+            <input hidden name="item_id" type="text" value="{{payment_order.item.id}}">
+            <div class="col-sm-6">
+              <label for="lastName" class="form-label">Recipient Names</label>
+              <input value="demo name" name="recipientname" type="text" class="form-control" id="lastName" required>
+              <div class="invalid-feedback">
+                Valid full name is required.
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="email" class="form-label">Email <span class="text-body-secondary"></span></label>
+              <input value="demo@gmail.com" name="email" type="email" class="form-control" id="email" placeholder="you@example.com">
+              <div class="invalid-feedback">
+                Please enter a valid email address for shipping updates.
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="address" class="form-label">Address</label>
+              <input value="demo adress" name="address" type="text" class="form-control" id="address" placeholder="1234 Main St" required>
+              <div class="invalid-feedback">
+                Please enter your shipping address.
+              </div>
+            </div>
+
+
+
+            <div class="col-md-5">
+              <label for="country" class="form-label">Country</label>
+              <input value="demo country" name="country" type="text" class="form-control" id="country" required>
+              <div class="invalid-feedback">
+                Please select a valid country.
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="state" class="form-label">State</label>
+              <input value="demo state" name="state" type="text" class="form-control" id="state" required>
+              <div class="invalid-feedback">
+                Please provide a valid state.
+              </div>
+            </div>
+
+        
+          </div>
+
+          <hr class="my-4">
+
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="same-address">
+            <label class="form-check-label" for="same-address">Shipping address is the same as my billing address</label>
+          </div>
+
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="save-info">
+            <label class="form-check-label" for="save-info">Save this information for next time</label>
+          </div>
+
+          <hr class="my-4">
+
+          <h4 class="mb-3">Payment</h4>
+
+          <div class="my-3">
+
+            <select  name="paymentmethod" class="form-select " aria-label="Default select example">
+              <option selected>Open this select menu</option>
+              <option value="credit card">Credit card </option>
+              <option value="debit card">Debit card </option>
+              <option value="paypal">paypal</option>
+            </select>
+
+
+          </div>
+
+          <div class="row gy-3">
+            <div class="col-md-6">
+              <label  for="cc-name" class="form-label">Name on card</label>
+              <input value="demo card name" name="card_name" type="text" class="form-control" id="cc-name" placeholder="" required>
+              <small class="text-body-secondary">Full name as displayed on card</small>
+              <div class="invalid-feedback">
+                Name on card is required
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="cc-number" class="form-label">Credit card number</label>
+              <input value="1234567" name="card_number" type="text" class="form-control" id="cc-number" placeholder="" required>
+              <div class="invalid-feedback">
+                Credit card number is required
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label for="cc-expiration" class="form-label">Expiration</label>
+              <input name="exp" type="date" class="form-control" id="cc-expiration" placeholder="" required>
+              <div class="invalid-feedback">
+                Expiration date required
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label for="cc-cvv" class="form-label">CVV</label>
+              <input value="123" name="cvv" type="text" class="form-control" id="cc-cvv" placeholder="" required>
+              <div class="invalid-feedback">
+                Security code required
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body class="container">
+    {% include "navbar.html" %}
+    <!-- messaging system -->
+    <div>
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{message.tags}}: {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+        <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+            {{message.tags}}: {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {%endif%}
+        {% endfor %}
+    </div>
+
+    <div class="mx-auto col-6 m-3">
+        <h3 class="form-label">email verification </h3>
+
+        <div style="margin-bottom: 30vh;">
+            <form method="POST" action="/verification_proper" class="row g-3">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="" class="form-label">4 Digit code</label>
+                    <input type="passcode" class="form-control" name="passcode" id=""
+                        placeholder="" />
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-outline-primary">Verify</button>
+                </div>
+                <span>Don't have an account yet? <a  href="/signup_view">signup</a></span>
+            </form>
+         
+
+        </div>
+    </div>
+
+
+
+</body>
+<footer class="footer mt-4 py-2 bg-body-secondary ">
+    <div class="text-center">
+        <p>Customer service built with <a href="https://getbootstrap.com/">Bootstrap</a>, <a
+                href="https://docs.djangoproject.com/">Django Framework</a> , by <a
+                href="https://twitter.com/telvinpriestley">@telvinpriestley</a>.</p>
+        <p class="mb-0">
+            <a class="link-secondary" href="#">Back to top</a>
+        </p>
+    </div>
+</footer>
+
+</html>

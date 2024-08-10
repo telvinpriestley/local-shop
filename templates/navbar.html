@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container">
+    <a class="navbar-brand" href="#">Navigation</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+       
+        {% if user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link" href="/items_view">Admin-Items</a>
+        </li>
+        {% endif %}
+
+        {% if user.is_active%}
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/name_list">Customer-List</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout_view">logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/login_view">login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/signup_view">signup</a>
+        </li>
+        {% endif %}
+
+
+      </ul>
+    </div>
+
+    <li class="nav-item">
+      <a class="nav-link" href="#">{{user.username}}</a>
+    </li>
+
+  </div>
+</nav>
+
+
+
+<!-- (Optional) - Place this js code after initializing bootstrap.min.js or bootstrap.bundle.min.js -->
+<!-- <script>
+  var triggerEl = document.querySelector("#navId a");
+  bootstrap.Tab.getInstance(triggerEl).show(); // Select tab by name
+</script> -->

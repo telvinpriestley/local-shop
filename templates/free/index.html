@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body class="container">
+    {% include "navbar.html" %}
+
+    <div class="mx-auto row m-3">
+        
+        <div class="col col-md-3">
+            <h3 class="form-label">send email</h3>
+            <button type="button" class="form-control btn btn-primary " data-bs-toggle="modal"
+                data-bs-target="#sendemail">
+                click me
+            </button>
+        </div>
+        {%if user.is_superuser%}
+        <div class="col">
+            <a href="/history_admin">All payment history</a>
+        </div>
+        {%endif%}
+    </div>
+    <!-- Modal -->
+   
+
+    <div class="modal fade" id="sendemail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Send an email as {{user.email}}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/sendemail">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" value="Django email test" required class="form-control"
+                                autocomplete="off">
+
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea name="message" required class="form-control" autocomplete="off" cols="30"
+                                rows="5"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Recievers Email </label>
+                            <input type="email" name="toemail" value="afanwi.at@gmail.com" class="form-control"
+                                autocomplete="off">
+                            <div class="form-text">We'll never share this email with anyone else.</div>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- messages -->
+    <div>
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{message.tags}}: {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% else %}
+        <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+            {{message.tags}}: {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {%endif%}
+        {% endfor %}
+    </div>
+
+    <!-- registerd person table  -->
+
+    
+
+    {% if user.is_superuser%}
+    <div>
+        {% if auth_users %}
+        <h1>signed in user List</h1>
+
+        <table class="table mb-4">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">username</th>
+                    <th scope="col">ban status</th>
+                    <th class="text-danger" scope="col">Ban</th>
+
+                </tr>
+            </thead>
+            {% for person in deets %}
+            <tbody>
+                <tr>
+                    <td>{{ person.user.id }} </td>
+                    <td>{{ person.user.first_name }}</td>
+                    <td>{{ person.user.last_name }}</td>
+                    <td>{{ person.user.email }}</td>
+                    <td>{{ person.user.username }}</td>
+                    <td>{{ person.status }}</td>
+                    <td>
+                        <form action="/toggle_ban_user" method="POST">
+                            {% csrf_token %}
+                            <input hidden type="text" name="user_id" value="{{person.user.id}}">
+                            {%if person.status%}
+                            <button type="submit" class="btn link-danger">
+                                Unban
+                            </button>
+                        {%else%}
+                        <button type="submit" class="btn link-danger">
+                            Ban
+                        </button>
+                        {%endif%}
+
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+
+            {% endfor %}
+        </table>
+
+
+        {% else %}
+        <h3>First log in , Practice entering your password let's see how it goes </h3>
+        {% endif %}
+
+    </div>
+{% else %}
+{% for stat in deets %}
+{% if user == stat.user %} 
+{%if stat.status%}
+<h1 >status: Banned !  </h1>
+
+{%else%}
+<h1 >status: Active !  </h1>
+{%endif%}
+
+{% endif %}
+{% endfor %}
+{% endif %}
+    <div class="table-responsive" style="margin-bottom: 30vh;">
+
+        <h3>place an <a class="text-success " href="/neworder_view">Order</a></h3>
+
+       
+    </div>
+
+
+
+</body>
+<footer class="footer mt-4 py-2 bg-body-secondary ">
+    <div class="text-center">
+        <p>Customer service built with <a href="https://getbootstrap.com/">Bootstrap</a>, <a
+                href="https://docs.djangoproject.com/">Django Framework</a> , by <a
+                href="https://twitter.com/telvinpriestley">@telvinpriestley</a>.</p>
+        <p class="mb-0">
+            <a class="link-secondary" href="#">Back to top</a>
+        </p>
+    </div>
+</footer>
+
+</html>
