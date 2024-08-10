@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body class="container">
+    {% include "navbar.html" %}
+    {% for message in messages %}
+    <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+        {{message.tags}}: {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <div class="row my-3">
+
+        <div class="col-5">
+            <a href="/name_list" class="col btn btn-outline-warning">back</a>
+            <a href="/payment_history/{{cus_instance.id}}" class="col btn btn-outline-primary">Payments History</a>
+            <h3>Order Items form</h3>
+            <form method="POST" action="/newreg_order">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Item Name</label>
+                    <select class="form-control" name="id" required>
+                        <option class="disabled" value="" > Select item</option>
+                        {% for item in items %}
+                        <Option value="{{item.id}}"> {{item.itemName}} /${{item.unitprice}}</Option>
+                        {% endfor %}
+
+                    </select>
+               
+
+                </div>
+                <div class="mb-3">
+                    1. {{item.itemName}}
+                    <label class="form-label">Number of Items</label>
+                    <input type="number" name="quantity" required class="form-control" autocomplete="off">
+                </div>
+                <label class="form-label">Delivered to my Address: {{cus_instance.address}}</label>
+
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="deliver" value="True">
+                        Yes
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary my-2">Submit</button>
+            </form>
+        </div>
+
+        <div class="col-7 " style="max-height: 400px; overflow: auto;">
+            {% if items %}
+            <h1>Items List</h1>
+            <div class="row">
+
+                {% for item in items %}
+                <div class="card mx-auto my-2" style="width: 12rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{item.itemName}} </h5>
+                        <p class="card-text"> Unit Price: <strong>${{item.unitprice}} </strong>
+                            There are:<strong> {{item.stock}} </strong> in stock
+                        </p>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-secondary">Details</a>
+                        </div>
+                    </div>
+                </div>
+
+
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    {% if orders %}
+    <h1>{{ cus_instance.username }}'s order List</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Handle</th>
+                <th>details</th>
+                <th>delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.item.itemName }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>${{ order.amount }}</td>
+                <td>{{ order.created }}</td>
+                {% if order.status %}
+                <td class="text-success">PAID</td>
+                <td class="text-success">COMPLETED</td>
+
+                {% else %}
+                <td class="text-danger">NOT PAID</td>
+
+                <td>
+                    <a type="button" class="link-success" data-bs-toggle="modal" data-bs-target="#1{{ order.id }}">
+                        Make Payments
+                    </a>
+                    <div class="modal fade" id="1{{ order.id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                        Payments for :#{{order.id}}: {{ order.item.itemName }}</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="modal-text"> Confirm to proceed to <strong class="text-primary">Make
+                                            Payments</strong>
+                                        <strong class="text-secondary"> #{{order.id}}: {{ order.item.itemName }}
+                                        </strong>
+                                    </p>
+                                    <p class="modal-text"> Cost: <strong class="text-success"> $ {{order.amount}}
+                                        </strong> </p>
+
+
+                                </div>
+                                <div class="modal-footer">
+
+                                    <a class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </a>
+                                    <form action="/payment_page" method="post">
+                                        {% csrf_token %}
+                                        <input hidden type="number" value="{{order.id}}" name="order_id">
+                                        <button class="btn btn-outline-success" type="submit"> Yes,Pay </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                {% endif %}
+
+                <td>
+                    <a class="link-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#{{order.id}}"
+                        aria-controls="offcanvasTop">Details
+                    </a>
+
+                    <div class="offcanvas offcanvas-top" tabindex="-1" id="{{order.id}}"
+                        aria-labelledby="offcanvasTopLabel">
+
+                        <div class="offcanvas-body">
+                            <strong> Order Details for #{{order.id}}: {{ order.item.itemName }}</strong>
+                            <div class="row container">
+
+                                <table class="col table table-striped ">
+                                    <tbody>
+                                        <tr>
+                                            <td>Unit Price</td>
+                                            <td>$ {{order.item.unitprice}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Quantity</td>
+                                            <td>{{ order.quantity }}</td>
+                                        </tr>
+                                        {% if order.deliver%}
+                                        <tr>
+                                            <td>Delivery To : {{ cus_instance.address }}</td>
+                                            <td>$ 10</td>
+                                        </tr>
+                                        {%else%}
+                                        <tr>
+                                            <td>Delivery To : {{ cus_instance.address }}</td>
+                                            <td class="text-danger">No !</td>
+                                        </tr>
+
+                                        {%endif%}
+                                    </tbody>
+                                </table>
+
+                                <div class="col">
+                                    <table class="col table table-striped ">
+                                        <tbody>
+                                            <tr>
+                                                <td>Transaction</td>
+                                                <td>{{order.created}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Status</td>
+                                                {% if order.status %}
+                                                <td class="text-success">PAID</td>
+                                                {% else %}
+                                                <td class="text-danger">NOT PAID</td>
+                                                {% endif %}
+                                            </tr>
+
+                                            <tr>
+                                                <td>Total</td>
+                                                <td>$ {{ order.amount }}</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td><a class="text-danger" href="/delete_order/{{ order.id }}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    {% else %}
+    <h3>No Regestered Orders Yet</h3>
+    {% endif %}
+
+
+    <footer class="footer mt-4 py-2 bg-body-secondary ">
+        <div class="text-center">
+            <p>Customer service built with <a href="https://getbootstrap.com/">Bootstrap</a>, <a
+                    href="https://docs.djangoproject.com/">Django Framework</a> , by <a
+                    href="https://twitter.com/telvinpriestley">@telvinpriestley</a>.</p>
+            <p class="mb-0">
+                <a class="link-secondary" href="#">Back to top</a>
+            </p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body class="container">
+   
+    {% include "navbar.html" %}
+
+    <a href="/neworder_view" class="col btn btn-outline-warning">back</a>
+
+    <div style="margin-bottom: 60vh;">
+        {% block payment  %}
+    {% if payments %}
+        <h1>Payments History : {{payment.customer.fname}}</h1>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Order #</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">Number of Items</th>
+                    <th scope="col">Unit Price</th>
+                    <th scope="col">Delivery </th>
+                    <th scope="col">Amount Paid</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Date</th>
+                    <th></th>
+
+                </tr>
+            </thead>
+            {% for payment in payments %}
+            <tbody>
+                <tr>
+                    <td> {{ payment.id }} </td>
+                    <td> #{{ payment.id }}^{{ payment.order.id }}@{{cus_id}}</td>
+                    <td>{{ payment.order.item.itemName }}</td>
+                    <td>{{ payment.order.quantity }}</td>
+                    <td>$ {{ payment.order.item.unitprice }}</td>
+
+                    {% if payment.order.deliver %}
+                    <td class="text-success">DELIVERED</td>
+                    {% else %}
+                    <td class="text-warning">NO DELIVERY</td>
+                    {% endif %}
+
+                    <td>$ {{ payment.amount }}</td>
+
+                    {% if payment.status %}
+                    <td class="text-success">PAID</td>
+                    {% else %}
+                    <td class="text-danger">NOT PAID</td>
+                    {% endif %}
+
+                    <td>{{ payment.created }}</td>
+
+                </tr>
+            </tbody>
+
+            {% endfor %}
+        </table>
+
+
+        {% else %}
+        <h3>No Payments Made Yet</h3>
+
+
+        {% endif %}
+        {% endblock %}
+    </div>
+
+    <footer class="footer mt-4 py-2 bg-body-secondary ">
+        <div class="text-center">
+            <p>Customer service built with <a href="https://getbootstrap.com/">Bootstrap</a>, <a
+                    href="https://docs.djangoproject.com/">Django Framework</a> , by <a
+                    href="https://twitter.com/telvinpriestley">@telvinpriestley</a>.</p>
+            <p class="mb-0">
+                <a class="link-secondary" href="#">Back to top</a>
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>
